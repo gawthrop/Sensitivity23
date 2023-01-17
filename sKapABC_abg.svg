@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: fig2dev Version 3.2.8b -->
+<!-- CreationDate: 2022-09-19 15:30:30 -->
+<!-- Magnification: 1.05 -->
+<svg	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="681pt" height="219pt"
+	viewBox="25 -300 10797 3472">
+<g fill="none">
+<!-- Text -->
+<text xml:space="preserve" x="5400" y="3015" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">1</text>
+<!-- Text -->
+<text xml:space="preserve" x="3600" y="3015" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">Re:r1</text>
+<!-- Text -->
+<text xml:space="preserve" x="1800" y="3015" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">1</text>
+<!-- Text -->
+<text xml:space="preserve" x="3600" y="1440" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">0</text>
+<!-- Text -->
+<text xml:space="preserve" x="225" y="1440" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">Ce:A</text>
+<!-- Text -->
+<text xml:space="preserve" x="3600" y="-135" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">Ce:sr1</text>
+<!-- Text -->
+<text xml:space="preserve" x="6975" y="1440" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">Ce:B</text>
+<!-- Text -->
+<text xml:space="preserve" x="8775" y="3015" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">Re:r2</text>
+<!-- Text -->
+<text xml:space="preserve" x="6975" y="3015" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">0</text>
+<!-- Text -->
+<text xml:space="preserve" x="10575" y="3015" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">0</text>
+<!-- Text -->
+<text xml:space="preserve" x="10575" y="1440" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">Ce:C</text>
+<!-- Text -->
+<text xml:space="preserve" x="225" y="3015" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">0</text>
+<!-- Line -->
+<polyline points=" 5625,2925 6750,2925 6525,3150"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 6975,2700 6975,1575 7200,1800"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 7200,2925 8325,2925 8100,3150"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 9225,2925 10350,2925 10125,3150"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 10575,2700 10575,1575 10800,1800"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 4050,2925 5175,2925 4950,3150"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 2025,2925 3150,2925 2925,3150"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 225,2700 225,1575 450,1800"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 450,2925 1575,2925 1350,3150"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 5175,2700 4050,1575 4050,1800"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<polyline points=" 3150,1575 2025,2700 2250,2700"
+	stroke="#000000" stroke-width="8px"/>
+<!-- Line -->
+<polyline points=" 3600,1125 3600,0 3825,225"
+	stroke="#000000" stroke-width="15px"/>
+</g>
+</svg>

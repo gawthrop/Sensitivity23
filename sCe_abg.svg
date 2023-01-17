@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Creator: fig2dev Version 3.2.8b -->
+<!-- CreationDate: 2022-09-20 15:35:26 -->
+<!-- Magnification: 1.05 -->
+<svg	xmlns="http://www.w3.org/2000/svg"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	width="188pt" height="244pt"
+	viewBox="4478 -472 2969 3869">
+<g fill="none">
+<!-- Line -->
+<rect x="4500" y="-450" width="2925" height="3825" rx="105"
+	stroke="#ffd600" stroke-width="15px"/>
+<!-- Text -->
+<text xml:space="preserve" x="6975" y="3015" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">0</text>
+<!-- Text -->
+<text xml:space="preserve" x="6975" y="1440" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">1</text>
+<!-- Text -->
+<text xml:space="preserve" x="5400" y="1440" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="end">Ce:sA</text>
+<!-- Text -->
+<text xml:space="preserve" x="5400" y="3015" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="end">Ce:inp</text>
+<!-- Text -->
+<text xml:space="preserve" x="6975" y="-135" fill="#000000" font-family="Helvetica" font-style="normal" font-weight="bold" font-size="216" text-anchor="middle">Ce:A</text>
+<!-- Line -->
+<polyline points=" 6975,2700 6975,1575 7200,1800"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 6975,1125 6975,0 7200,225"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 6750,1350 5625,1350 5850,1575"
+	stroke="#000000" stroke-width="15px"/>
+<!-- Line -->
+<polyline points=" 6750,2925 5625,2925 5850,3150"
+	stroke="#000000" stroke-width="15px"/>
+</g>
+</svg>
