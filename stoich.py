@@ -1,7 +1,7 @@
 """ Stoichiometric analysis using BondGraphTools """
 import BondGraphTools as bgt
 import numpy as np
-import sympy as sp
+import sympy
 import copy
 import scipy.integrate as sci
 import scipy.constants as const
@@ -25,10 +25,14 @@ def RT(T_cent=37):
     T = 273.15 + T_cent         # Human temperature deg K
     return R()*T
 
-def V_N(T_cent=37):
+def V_N(T_cent=37,Normalise=False):
     """The V_N constant (=RT/F).
     """
-    V_N = RT()/F()
+    if Normalise:
+        V_N = 1
+    else:
+        V_N = RT(T_cent)/F()
+        
     return V_N
 
 def indices(list,element):
@@ -80,38 +84,38 @@ def get_param_by_name(model,comp_name,par_name):
 
 def hp(x,y):
     """Hadamard product: Elementwise product of two vectors"""
-    return sp.matrix_multiply_elementwise(x,y)
+    return sympy.matrix_multiply_elementwise(x,y)
     
 def Exp(x,lin=[]):
     """Elementwise exponent of vector"""
-    ex = sp.Matrix([])
-    V_N = sp.symbols('V_N')
+    ex = sympy.Matrix([])
+    V_N = sympy.symbols('V_N')
     for i,x_i in enumerate(x):
         if i in lin:
             ex_i = x_i/V_N
         else:
-            ex_i = sp.exp(x_i)
-        ex = ex.row_insert(i,sp.Matrix([ex_i]))
+            ex_i = sympy.exp(x_i)
+        ex = ex.row_insert(i,sympy.Matrix([ex_i]))
     return ex
 
 def Log(x,lin=[]):
     """Elementwise log of vector"""
-    V_N = sp.symbols('V_N')
-    lx = sp.Matrix([])
+    V_N = sympy.symbols('V_N')
+    lx = sympy.Matrix([])
     for i,x_i in enumerate(x):
         if i in lin:
             lx_i = x_i/V_N
         else:
-            lx_i = sp.log(x_i)
-        lx = lx.row_insert(i,sp.Matrix([lx_i]))
+            lx_i = sympy.log(x_i)
+        lx = lx.row_insert(i,sympy.Matrix([lx_i]))
     return lx
 
-def Logn(x,lin=[],makePositive=True):
+def Logn(x,lin=[],makePositive=True,Normalise=False):
     """Numerical elementwise log of vector"""
     lx = np.zeros(x.shape)
     for i,x_i in enumerate(x):
         if i in lin:
-            lx_i = x_i/V_N()
+            lx_i = x_i/V_N(Normalise=Normalise)
         else:
             min_i = np.min(x_i)
             if makePositive and (min_i < 0):
@@ -127,20 +131,20 @@ def Logn(x,lin=[],makePositive=True):
 
 def vec(species,label="x"):
     """Create col. vector of symbolic states"""
-    st = sp.Matrix([])
+    st = sympy.Matrix([])
     for i,spec in enumerate(species):
         spec_str = label+"_"+spec
-        spec_sym = sp.symbols(spec_str)
-        st = st.row_insert(i,sp.Matrix([spec_sym]))
+        spec_sym = sympy.symbols(spec_str)
+        st = st.row_insert(i,sympy.Matrix([spec_sym]))
 
     return st
 
 def par_vec(model,names,par):
 
-    Par = sp.Matrix([])
+    Par = sympy.Matrix([])
     for i,name in enumerate(names):
         val = get_param_by_name(model,name,par)
-        Par = Par.row_insert(i,sp.Matrix([val]))
+        Par = Par.row_insert(i,sympy.Matrix([val]))
 
     return Par
 
@@ -153,15 +157,15 @@ def flow(s,sf=None,alpha=1):
         ZZ = sf["Z"]
         DD = sf["D"]
         
-    V_N = sp.symbols("V_N")
+    V_N = sympy.symbols("V_N")
     species = s["species"]
     reaction = s["reaction"]
     K_s = s["K_s"]
     kappa = s["kappa"]
     i_lin = s["i_lin"]
     j_lin = s["j_lin"]
-    Z = sp.Matrix(ZZ)/alpha
-    D = sp.Matrix(DD)
+    Z = sympy.Matrix(ZZ)/alpha
+    D = sympy.Matrix(DD)
     kx = hp(K_s,vec(species,"x"))
     Phi_c = Z.T*Log(kx,i_lin)   # Complex potentials
     v0 = -D.T*Exp(Phi_c) # Nonlinear flows (mass-action)
@@ -169,9 +173,9 @@ def flow(s,sf=None,alpha=1):
     ##v0[j_lin] = v0_lin[j_lin]
     for j,v0j in enumerate(v0):
         if j in j_lin:
-            v0[j] = sp.simplify(v0_lin[j])
+            v0[j] = sympy.simplify(v0_lin[j])
         else:
-            v0[j] = sp.simplify(v0[j])
+            v0[j] = sympy.simplify(v0[j])
             
     v = hp(kappa,v0)
     return v,v0
@@ -182,14 +186,14 @@ def dflow(s,sf=None):
     """
     v,v0 = flow(s,sf=sf)
     x = vec(s["species"])
-    dv = sp.Matrix([])
-    dv0 = sp.Matrix([])
+    dv = sympy.Matrix([])
+    dv0 = sympy.Matrix([])
     
     for i,x_i in enumerate(x):
-        dv_i = sp.diff(v,x_i)
-        dv = dv.col_insert(i,sp.Matrix([dv_i]))
-        dv0_i = sp.diff(v0,x_i)
-        dv0 = dv0.col_insert(i,sp.Matrix([dv0_i]))
+        dv_i = sympy.diff(v,x_i)
+        dv = dv.col_insert(i,sympy.Matrix([dv_i]))
+        dv0_i = sympy.diff(v0,x_i)
+        dv0 = dv0.col_insert(i,sympy.Matrix([dv0_i]))
 
     return dv,dv0
 
@@ -205,7 +209,7 @@ def rat2int(N):
     mN is m*N where m is the least common multiple of all denominators
 
      Example:
-    >>> n1 = sp.Matrix([2,1]); n2 = sp.Matrix([4,6]); N = sp.Matrix([n1/2,n2/3])
+    >>> n1 = sympy.Matrix([2,1]); n2 = sympy.Matrix([4,6]); N = sympy.Matrix([n1/2,n2/3])
     >>> print(N)
     Matrix([[1], [1/2], [4/3], [2]])
     >>> print(stoich.rat2int(N))
@@ -216,8 +220,8 @@ def rat2int(N):
     lcm_den = 1;
     for i in range(n):
         for j in range(m):
-            num,den = sp.fraction(N[i,j])
-            lcm_den = sp.lcm(lcm_den,den)
+            num,den = sympy.fraction(N[i,j])
+            lcm_den = sympy.lcm(lcm_den,den)
             #print(num,den,lcm_den)
 
     return lcm_den*N;      # Make integer
@@ -240,13 +244,13 @@ def inull(NN,integer=False,symbolic=False):
     [1]]
     """
 
-    N = sp.Matrix(NN)            # Symbolic form
+    N = sympy.Matrix(NN)            # Symbolic form
     
     ## Use sympy to compute null space - list of vectors
-    null_list = sp.simplify(N, rational=True).nullspace()
+    null_list = sympy.simplify(N, rational=True).nullspace()
     
     ## Create matrix with null-space vectors as columns
-    nullN = sp.Matrix([])
+    nullN = sympy.Matrix([])
     for j,vec in enumerate(null_list):
         if integer:
             vec = rat2int(vec)      # Make integer from rational
@@ -281,7 +285,7 @@ def xX(N,G,symbolic=False,integer=False):
     n_X = nn[0]
     n_V = nn[1]
     
-    NN = sp.Matrix(N)           # Convert to sympy
+    NN = sympy.Matrix(N)           # Convert to sympy
     NNT = NN.T
     res = NNT.rref();            # Use sympy rref
     RRT = res[0].T
@@ -292,7 +296,7 @@ def xX(N,G,symbolic=False,integer=False):
     L_Xx = RRT[:,0:n_x];
     
     ## LxX: convert from X to x
-    I = sp.eye(n_X)
+    I = sympy.eye(n_X)
     L_xX = I[i_x,:]
     L_dX = I[i_d,:]
 
@@ -662,10 +666,10 @@ def sprintl(s,name="N",align=True,transpose=False):
         str = str + "\\end{pmatrix}"
     else:
         if transpose:
-            mat = sp.latex(sp.Matrix(s[name].T),mat_delim="(")
+            mat = sympy.latex(sympy.Matrix(s[name].T),mat_delim="(")
             str = str + name + "^T &=\n" + mat
         else:
-            mat = sp.latex(sp.Matrix(s[name]),mat_delim="(")
+            mat = sympy.latex(sympy.Matrix(s[name]),mat_delim="(")
             str = str + name + " &=\n" + mat
 
     if align:
@@ -689,9 +693,9 @@ def sprintvl(s,alpha=1,align=True):
     v,v0 = flow(s,alpha=alpha)
     V = vec(s["reaction"],"v")
     for i,v_i in enumerate(v):
-        str += sp.latex(V[i])
+        str += sympy.latex(V[i])
         str += " &= "
-        str += sp.latex(v_i,mat_delim="(")
+        str += sympy.latex(v_i,mat_delim="(")
         str += "\\\\\n"
 
     str = str[:-3]
@@ -909,7 +913,7 @@ def pool(s,removeSingle=True):
     ss['N'] = N
 
     ## Create pseudo reaction names
-    n_M = G.shape[0]
+    n_M = N.shape[1]
     name = []
     for i in range(n_M):
         name.append('m_'+str(i))
@@ -917,6 +921,10 @@ def pool(s,removeSingle=True):
 
     ## Species are the same
     ss['species'] = s['species']
+
+    ## Sizes
+    ss['n_X'] = s['n_X']
+    ss['n_V'] = n_M
 
     return ss
 
@@ -963,12 +971,12 @@ def getStoich(model,linear=[],chemostats=[],quiet=False):
             is_f = (j % 2) ==0
             j_reac = int(j/2);
             if is_f:
-                #n = -sp.diff(cr,cv)
+                #n = -sympy.diff(cr,cv)
                 n = -cr.coeff(cv)
                 #print(i_species, j_reac, n)
                 Nf[i_species][j_reac] = n
             else:
-                # = -sp.diff(cr,cv)
+                # = -sympy.diff(cr,cv)
                 n = -cr.coeff(cv)
                 #print(i_species, j_reac, n)
                 Nr[i_species][j_reac] = n
@@ -1141,13 +1149,13 @@ def stoich(model,chemostats=[],linear=[],N=None,K=None,G=None,UniDir=None,quiet=
     n_x = L_xX.shape[0]
 
     ## Species gain parameter vector
-    K_s = sp.Matrix(sp.symbols(spec_par_name))
+    K_s = sympy.Matrix(sympy.symbols(spec_par_name))
     # ## Linear capacitors are parameterised with capacitance
     # for  i in i_lin:
     #     K_s[i] = 1/K_s[i]
 
     ## Reaction gain parameter vector
-    kappa = sp.Matrix(sp.symbols(reac_par_name))
+    kappa = sympy.Matrix(sympy.symbols(reac_par_name))
     # ## Linear resistors are parameterised with resistance
     # for  j in j_lin:
     #     kappa[j] = 1/kappa[j]
@@ -1287,7 +1295,7 @@ def stoichSensitivity(s):
     s['reaction'] = reaction
     s['Z'] = sZ
     s['D'] = sD
-    s['K_s'] = sp.Matrix(sp.symbols(spec_par_name))
+    s['K_s'] = sympy.Matrix(sympy.symbols(spec_par_name))
 
     return extra
 
@@ -1349,7 +1357,7 @@ def unify(s,commonSpecies=[],commonReactions=[]):
         s['reaction'] = reaction
         s['Z'] = Z
         s['D'] = D
-        s['K_s'] = sp.Matrix(sp.symbols(spec_par_name))
+        s['K_s'] = sympy.Matrix(sympy.symbols(spec_par_name))
 
 def merge(s,CommonSpecies={},CommonReactions={}):
     """ Merge common components within a BG """
@@ -1443,7 +1451,24 @@ def path(s,sc,removeSingle=True,reducedState=True,pathname='pr',useFR=False):
         sp['species'] = spec
     else:
         sp['species'] = s['species']
-            
+
+    ## Compute ZD decomposition
+    Z,D = N2ZD(sp['Nf'],sp['Nr'])
+    sp['Z'] = Z
+    sp['D'] = D
+
+    ## Create the K_s (parameter names for species) list
+    kappa = []
+    for reac in sp['reaction']:
+        kappa.append(f'kappa_{reac}')
+    sp['kappa'] = sympy.Matrix(sympy.symbols(kappa))
+
+    ## Create the kappa (parameter names for species) list
+    K_s = []
+    for spec in sp['species']:
+        K_s.append(f'K_{spec}')
+    sp['K_s'] = sympy.Matrix(sympy.symbols(K_s))
+    
     return (sp)
 
 def setParameter(s,parameter=None,X0=None,quiet=False):
@@ -1551,7 +1576,7 @@ def lin(s,sc,sf=None,model=None,x_ss=None,parameter=None,quiet=False,outvar='V',
     species = s["species"]
     for spec in species:
         if model is None:
-            par = sp.symbols('K_'+spec)
+            par = sympy.symbols('K_'+spec)
         else:
             par = (model/spec).params['k']['value']
         arg.append(par)
@@ -1560,7 +1585,7 @@ def lin(s,sc,sf=None,model=None,x_ss=None,parameter=None,quiet=False,outvar='V',
     reaction = s["reaction"]
     for reac in reaction:
         if model is None:
-            par = sp.symbols('kappa_'+reac)
+            par = sympy.symbols('kappa_'+reac)
         else:
             par = (model/reac).params['r']['value']
         arg.append(par)
@@ -1572,7 +1597,7 @@ def lin(s,sc,sf=None,model=None,x_ss=None,parameter=None,quiet=False,outvar='V',
 
 
     ## Create a numerical function: linearised system X to V
-    Cfun = sp.utilities.lambdify(arg,dvdx,"numpy")
+    Cfun = sympy.utilities.lambdify(arg,dvdx,"numpy")
 
     numArgs = tuple(K.flatten().tolist() + kappa.flatten().tolist()  + X_ss.flatten().tolist())
     #print(numArgs)
@@ -1664,14 +1689,15 @@ def lin(s,sc,sf=None,model=None,x_ss=None,parameter=None,quiet=False,outvar='V',
     return con.ss(a,b,c,d)
 
     
-def sim_flow0(X,K,Z,D,i_lin,j_lin,alpha,kappa,phi0,reac_index,V_flow,t,Kappa=None):
+def sim_flow0(X,K,Z,D,i_lin,j_lin,alpha,kappa,phi0,reac_index,V_flow,t,
+              Kappa=None,Normalise=False):
     KK = np.diag(K)
-    phi = Logn(KK@X,i_lin).T      # Species potentials normalised by V_N
+    phi = Logn(KK@X,i_lin,Normalise=Normalise).T      # Species potentials normalised by V_N
     if phi0 is not None:
-        phi += phi0/V_N()       # Add explicit potentials normalised by V_N
+        phi += phi0/V_N(Normalise=Normalise)       # Add explicit potentials normalised by V_N
     Phi_c = Z.T@phi.T     # Complex potentials
     V0 = -D.T@np.exp(Phi_c/alpha)     # Nonlinear flows (mass-action)
-    V0_lin =  -D.T@Phi_c*V_N()       # Linear flows
+    V0_lin =  -D.T@Phi_c*V_N(Normalise=Normalise)       # Linear flows
     V0[j_lin] = V0_lin[j_lin]   # Insert linear flows
 
     ## Vary kappa
@@ -1692,7 +1718,8 @@ def sim_flow0(X,K,Z,D,i_lin,j_lin,alpha,kappa,phi0,reac_index,V_flow,t,Kappa=Non
 
     
 def sim_fun(t,x,s,sc,X0,K,kappa,alpha=1,
-            reduced=True,X_chemo=None,V_flow=None,Kappa=None,phi0=None):
+            reduced=True,X_chemo=None,V_flow=None,
+            Kappa=None,phi0=None,Normalise=False):
 
     Z = s["Z"]
     D = s["D"]
@@ -1715,7 +1742,8 @@ def sim_fun(t,x,s,sc,X0,K,kappa,alpha=1,
         X = x;
 
     ## Compute flows
-    V,V0 = sim_flow0(X,K,Z,D,i_lin,j_lin,alpha,kappa,phi0,reac_index,V_flow,t,Kappa=Kappa)
+    V,V0 = sim_flow0(X,K,Z,D,i_lin,j_lin,alpha,kappa,phi0,reac_index,V_flow,t,
+                     Kappa=Kappa,Normalise=Normalise)
         
     ## Compute state derivative
     dX = N@V
@@ -1728,7 +1756,8 @@ def sim_fun(t,x,s,sc,X0,K,kappa,alpha=1,
     return dx
 
 def sim(s,sc=None,sf=None,X0=None,t=None,linear=False,V0=None,alpha=1,parameter=None,
-        X_chemo=None,V_flow=None,Kappa=None,reduced=True,phi0=None,tol = 1e-6,quiet=True):
+        X_chemo=None,V_flow=None,Kappa=None,reduced=True, Normalise=False,
+        phi0=None,tol = 1e-6,quiet=True):
     
     n_X = s["n_X"]
     n_V = s["n_V"]
@@ -1837,7 +1866,8 @@ def sim(s,sc=None,sf=None,X0=None,t=None,linear=False,V0=None,alpha=1,parameter=
             ## Simulate reduced-order system
             x = sci.odeint(sim_fun,x0,t,
                            atol=tol,rtol=tol,hmax=t[1]-t[0],
-                           args=(sf,sc,X0,K,kappa,alpha,reduced,X_chemo,V_flow,Kappa,phi0,),
+                           args=(sf,sc,X0,K,kappa,alpha,reduced,X_chemo,V_flow,
+                                 Kappa,phi0,Normalise,),
                            tfirst=True)
         else:
             ## Linearised system in Python Control Systems Library format
@@ -1875,7 +1905,7 @@ def sim(s,sc=None,sf=None,X0=None,t=None,linear=False,V0=None,alpha=1,parameter=
 
     ## Compute potentials
     KX = np.diag(K)@X.T
-    phi = V_N()*(Logn(KX,i_lin)).T + phi0
+    phi = V_N(Normalise=Normalise)*(Logn(KX,i_lin,Normalise=Normalise)).T + phi0
     Phi = -phi@N
     
     ## Reconstruct flows.
@@ -2156,23 +2186,23 @@ def model():
     model = bgt.new(name="ABCE")
 
     ## Component Ce:A
-    K_A = sp.symbols('K_A')
-    RT = sp.symbols('RT')
+    K_A = sympy.symbols('K_A')
+    RT = sympy.symbols('RT')
     A = bgt.new("Ce",name="A",value={'k':K_A,'R':RT,'T':1},library="BioChem")
 
     ## Component Ce:B
-    K_B = sp.symbols('K_B')
-    RT = sp.symbols('RT')
+    K_B = sympy.symbols('K_B')
+    RT = sympy.symbols('RT')
     B = bgt.new("Ce",name="B",value={'k':K_B,'R':RT,'T':1},library="BioChem")
 
     ## Component Ce:C
-    K_C = sp.symbols('K_C')
-    RT = sp.symbols('RT')
+    K_C = sympy.symbols('K_C')
+    RT = sympy.symbols('RT')
     C = bgt.new("Ce",name="C",value={'k':K_C,'R':RT,'T':1},library="BioChem")
 
     ## Component Ce:E
-    K_E = sp.symbols('K_E')
-    RT = sp.symbols('RT')
+    K_E = sympy.symbols('K_E')
+    RT = sympy.symbols('RT')
     E = bgt.new("Ce",name="E",value={'k':K_E,'R':RT,'T':1},library="BioChem")
 
     ## Junction 0:mtt0
@@ -2188,8 +2218,8 @@ def model():
     mtt1_r = bgt.new("1")
 
     ## Component Re:r1
-    kappa_r1 = sp.symbols('kappa_r1')
-    RT = sp.symbols('RT')
+    kappa_r1 = sympy.symbols('kappa_r1')
+    RT = sympy.symbols('RT')
     r1 = bgt.new("Re",name="r1",value={'r':kappa_r1,'R':RT,'T':1},library="BioChem")
 
     ## Junction 1:mtt1_2
@@ -2199,8 +2229,8 @@ def model():
     mtt1_2_r = bgt.new("1")
 
     ## Component Re:r2
-    kappa_r2 = sp.symbols('kappa_r2')
-    RT = sp.symbols('RT')
+    kappa_r2 = sympy.symbols('kappa_r2')
+    RT = sympy.symbols('RT')
     r2 = bgt.new("Re",name="r2",value={'r':kappa_r2,'R':RT,'T':1},library="BioChem")
 
     ## Component list

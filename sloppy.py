@@ -2,7 +2,7 @@ import control as con
 import numpy as np
 import matplotlib.pyplot as plt
 
-def Sloppy(Sys,t=None,GainOnly=False,small = 1e-9):
+def Sloppy(Sys,t=None,GainOnly=False,small = 1e-12):
     
     # Dimensions
     D = Sys.D
@@ -57,7 +57,7 @@ def Sloppy(Sys,t=None,GainOnly=False,small = 1e-9):
     return H,eig,eigv,t
 
 def SloppyPrint(eig,eigv,inp,min_eig = 1e-6,min_eigv=1e-6,max_eigs=5,
-                prefix=r'\lambda_'):
+                prefix=r'\lambda_',precision = 3):
     
       for i,eigi in enumerate(eig):
         line = ''
@@ -70,7 +70,7 @@ def SloppyPrint(eig,eigv,inp,min_eig = 1e-6,min_eigv=1e-6,max_eigs=5,
 
             maxeig = max(abs(eigvi))
            # print(maxeig)
-            np.set_printoptions(precision=2)
+            np.set_printoptions(precision=precision)
             #print(f'Eigenvector: {eigvi/maxeig}')
 
             ## Find most important parameters
@@ -96,13 +96,14 @@ def SloppyPrint(eig,eigv,inp,min_eig = 1e-6,min_eigv=1e-6,max_eigs=5,
                     inpi = inpi[1:] #Strip leading s
                     if not prefix is None:
                         inpi = '{'+inpi+'}'
-                    line += f' {sign} {abs(eigvii):.2f} {prefix}{inpi}'
+                    line += f' {sign} {abs(eigvii):.3f} {prefix}{inpi}'
             
             #print(inpSort)
             #print(eigvi)
             print(line)
     
-def SloppyPlot(eig,eigv,inp,square=False,Eig=None,Eigv=None):
+def SloppyPlot(eig,eigv,inp,square=False,Eig=None,Eigv=None,
+               grid=False,lw=4,ls='dashed',color='black'):
 
     if not (len(eig)==2):
         print('Plotting only for 2 parameters, not', len(eig))
@@ -110,8 +111,9 @@ def SloppyPlot(eig,eigv,inp,square=False,Eig=None,Eigv=None):
         ## Plot Elipse
         theta = np.linspace(0, 2*np.pi, 1000);
         ellipsis = (1/np.sqrt(eig[None,:]) * eigv) @ [np.sin(theta), np.cos(theta)]
-        plt.plot(ellipsis[0,:], ellipsis[1,:],label='$Q$')
-        plt.grid()
+        plt.plot(ellipsis[0,:], ellipsis[1,:],label='$Q=1$',lw=lw,color=color)
+        if grid:
+            plt.grid()
 
         xlabel = inp[0]
         xlabel = '$\lambda_{'+xlabel[1:]+'}$'
@@ -133,7 +135,8 @@ def SloppyPlot(eig,eigv,inp,square=False,Eig=None,Eigv=None):
         ## Optional plot second elipse - eg for steady-state version
         if not (Eig is None):
             ellipsis = (1/np.sqrt(Eig[None,:]) * Eigv) @ [np.sin(theta), np.cos(theta)]
-            plt.plot(ellipsis[0,:], ellipsis[1,:],label='$Q_\infty$')
+            plt.plot(ellipsis[0,:], ellipsis[1,:],label='$Q_\infty=1$',
+                     lw=lw,color=color,ls=ls)
             plt.legend()
         ## Use first set of axes
         if square:
@@ -156,16 +159,17 @@ def SloppyPlot(eig,eigv,inp,square=False,Eig=None,Eigv=None):
     # plt.show()
     
 
-def SloppyPlotData(t,y,inp,outp):
+def SloppyPlotData(t,y,inp,outp,grid=False,lw=4):
     
     n_out = y.shape[0]
     n_par = y.shape[1]
     ## Plot Data
     for i in range(n_out):
         for j in range(n_par):
-            plt.plot(t,y[i,j,:],label=f'{inp[j]}-{outp[i]}')
-    plt.legend()    
-    plt.grid()
+            plt.plot(t,y[i,j,:],label=f'{inp[j]}-{outp[i]}',lw=lw)
+    plt.legend()
+    if grid:
+        plt.grid()
     plt.xlabel(r'$t$')
     plt.ylabel(r'f')
     plt.show()
