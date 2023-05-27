@@ -56,16 +56,19 @@ def getName(sys,name):
     comp = var[0]
     name = var[1]
 
-    ## Assume that Re components are called r something (yuk)
-    if (name[0] == 'u') and (comp.name[0] == 'r'):
-        #name = comp.parent.name+':'+comp.name
-        name = comp.name
+    # ## Assume that Re components are called r something (yuk)
+    # if (name[0] == 'u') and (comp.name[0] == 'r'):
+    #     #name = comp.parent.name+':'+comp.name
+    #     name = comp.name
+    # else:
+    #     if comp.metamodel == 'BG':
+    #         name = getName(comp,name)
+    #     else:
+    #         name = comp.name
+    if comp.metamodel == 'BG':
+        name = getName(comp,name)
     else:
-        if comp.metamodel == 'BG':
-            name = getName(comp,name)
-        else:
-            name = comp.name
-
+        name = comp.name
     return name
     
    
@@ -571,7 +574,7 @@ def replaceRe(model,quiet=False):
                     bgt.disconnect(comp,reverse_comp)
                         
             ## Remove the Re
-            name = comp.name;
+            #name = comp.name;
             bgt.remove(model, comp)
                         
             ## Add the new ReSS
